@@ -20,6 +20,41 @@
 char *dns_lookup(char *addr_host, struct sockaddr_in *addr_con);
 char *reverse_dns_lookup(char *ip_addr);
 
+char *dns_lookup(char *addr_host, struct sockaddr_in *addr_con) {
+    struct hostent *host_entity;
+    char *ip = (char *)malloc(NI_MAXHOST * sizeof(char));
+
+    if ((host_entity = gethostbyname(addr_host)) == NULL) {
+        return NULL;
+    }
+
+    strcpy(ip, inet_ntoa(*(struct in_addr *)host_entity->h_addr));
+
+    addr_con->sin_family = host_entity->h_addrtype;
+    addr_con->sin_port = htons(0);
+    addr_con->sin_addr.s_addr = *(long *)host_entity->h_addr;
+
+    return ip;
+}
+
+char *reverse_dns_lookup(char *ip_addr) {
+    struct sockaddr_in temp_addr;
+    socklen_t len;
+    char buf[NI_MAXHOST], *ret_buf;
+
+    temp_addr.sin_family = AF_INET;
+    temp_addr.sin_addr.s_addr = inet_addr(ip_addr);
+    len = sizeof(struct sockaddr_in);
+
+    if (getnameinfo((struct sockaddr *)&temp_addr, len, buf, sizeof(buf), NULL, 0, NI_NAMEREQD)) {
+        return NULL;
+    }
+
+    ret_buf = (char *)malloc((strlen(buf) + 1) * sizeof(char));
+    strcpy(ret_buf, buf);
+    return ret_buf;
+}
+
 void traceroute(int sockfd, struct sockaddr_in *addr_con, char *dst_ip, char *dst_hostname) {
     int ttl, recv_len, addr_len;
     struct sockaddr_in recv_addr;
