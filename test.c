@@ -97,7 +97,7 @@ void traceroute(int sockfd, struct sockaddr_in *addr_con, char *dst_ip, char *ds
         icmp_hdr.checksum = 0;
         icmp_hdr.un.echo.id = htons(getpid() & 0xFFFF);
         icmp_hdr.un.echo.sequence = htons(1);
-        icmp_hdr.checksum = icmp_checksum((unsigned short *)&icmp_hdr, sizeof(icmp_hdr));
+        icmp_hdr.checksum = checksum((unsigned short *)&icmp_hdr, sizeof(icmp_hdr));
 
         if (sendto(sockfd, &icmp_hdr, sizeof(icmp_hdr), 0, (struct sockaddr *) addr_con, sizeof(*addr_con)) < 0) {
             printf("Error sending ICMP packet!\n");
