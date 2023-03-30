@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:56 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/01/16 15:43:16 by sbaranes         ###   ########lyon.fr   */
+/*   Updated: 2023/03/30 17:50:00 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	process_host(t_args *args, struct sockaddr_in *addr_config)
 	host_entity = gethostbyname(args->ip);
 	if (host_entity == NULL)
 	{
-		printf("ft_ping: %s: Name or service not known\n", args->ip);
+		printf("Ft_Traceroute: unknown host %s\n", args->ip);
 		return (1);
 	}
 	args->ip_brut = args->ip;

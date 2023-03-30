@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:24 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/01/16 15:44:12 by sbaranes         ###   ########lyon.fr   */
+/*   Updated: 2023/03/30 17:39:05 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,11 @@
 # include <signal.h>
 # include <float.h>
 
-# define H 0
-# define V 1
 # define PKT_SIZE 64
 # define RESERVED 69
 # define TTL_EXCCEDED 192
 # define ECHO_REPLY 0
 # define PING_SLEEP_RATE 1000000
-# define ERROR_FLAG "Flags format invalide, you can use -[t, v]only.\n"
 # define ERROR_ARG "Number of arguments incorrect.\n"
 
 /*
@@ -51,7 +48,6 @@ typedef struct s_args
 	char				*hostname;
 	int					sock;
 	bool				diff;
-	bool				flags[2];
 	int					ttl;
 	struct timeval		tv_out;
 }t_args;

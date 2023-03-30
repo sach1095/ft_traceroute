@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:59 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/01/16 15:39:27 by sbaranes         ###   ########lyon.fr   */
+/*   Updated: 2023/03/30 17:50:39 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,6 @@ void	procces_recv(t_args *args, t_packet packet, bool sucess)
 			if (packet.hdr.type == RESERVED && packet.hdr.code
 				== ECHO_REPLY)
 				print_receive_success(args, &g_stats);
-			else if (packet.hdr.type == RESERVED && packet.hdr.code
-				== TTL_EXCCEDED && args->flags[V] == true)
-				print_receive_fail(args, &g_stats);
 		}
 	}
 }

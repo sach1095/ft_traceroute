@@ -1,5 +1,5 @@
 # Compilation
-NAME		=	ft_ping
+NAME		=	ft_traceroute
 CC			=	clang
 FLAGS		=	-Wall -Werror -Wextra -g3 -fsanitize=address
 HEADER		=	-I$(PATH_INC)

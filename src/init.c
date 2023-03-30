@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:44 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/01/16 14:51:41 by sbaranes         ###   ########lyon.fr   */
+/*   Updated: 2023/03/30 17:42:38 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,11 @@ void	init_stats_and_time(t_stats *stats, t_args *args)
 	stats->time_btw_packet = 0;
 	stats->ip = NULL;
 	stats->error = NULL;
-	stats->verbos = args->flags[V];
 	stats->ip = args->ip_brut;
 }
 
 void	init_args(t_args *args)
 {
-	args->flags[0] = false;
-	args->flags[1] = false;
 	args->ip = NULL;
 	args->ip_brut = NULL;
 	args->hostname = NULL;
