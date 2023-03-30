@@ -55,95 +55,57 @@ char *reverse_dns_lookup(char *ip_addr) {
     return ret_buf;
 }
 
-// void traceroute(int sockfd, struct sockaddr_in *addr_con, char *dst_ip, char *dst_hostname) {
-//     int ttl, recv_len, addr_len;
-//     struct sockaddr_in recv_addr;
-//     struct icmphdr icmp_hdr;
-//     struct iphdr ip_hdr;
-//     char recv_buf[1024];
-//     char *rev_host;
+void traceroute(int sockfd, struct sockaddr_in *addr_con, char *dst_ip, char *dst_hostname) {
+    int ttl, recv_len, addr_len;
+    struct sockaddr_in recv_addr;
+    struct icmphdr icmp_hdr;
+    struct iphdr ip_hdr;
+    char recv_buf[1024];
+    char *rev_host;
 
-//     printf("Traceroute to %s (%s), %d hops max\n\n", dst_hostname, dst_ip, MAX_TTL);
+    printf("Traceroute to %s (%s), %d hops max\n\n", dst_hostname, dst_ip, MAX_TTL);
 
-//     for (ttl = 1; ttl <= MAX_TTL; ttl++) {
-//         if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) != 0) {
-//             printf("Error setting TTL value!\n");
-//             return;
-//         }
+    for (ttl = 1; ttl <= MAX_TTL; ttl++) {
+        if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) != 0) {
+            printf("Error setting TTL value!\n");
+            return;
+        }
 
-//         if (sendto(sockfd, &icmp_hdr, sizeof(icmp_hdr), 0, (struct sockaddr *) addr_con, sizeof(*addr_con)) < 0) {
-//             printf("Error sending ICMP packet!\n");
-//             return;
-//         }
+        icmp_hdr.type = ICMP_ECHO;
+        icmp_hdr.code = 0;
+        icmp_hdr.checksum = 0;
+        icmp_hdr.un.echo.id = htons(getpid() & 0xFFFF);
+        icmp_hdr.un.echo.sequence = htons(1);
+        icmp_hdr.checksum = icmp_checksum((unsigned short *)&icmp_hdr, sizeof(icmp_hdr));
 
-//         addr_len = sizeof(recv_addr);
-//         recv_len = recvfrom(sockfd, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *) &recv_addr, &addr_len);
-
-//         if (recv_len <= 0) {
-//             printf("%d * * *\n", ttl);
-//         } else {
-//             rev_host = reverse_dns_lookup(inet_ntoa(recv_addr.sin_addr));
-//             if (rev_host == NULL) {
-//                 printf("%d %s (%s)\n", ttl, inet_ntoa(recv_addr.sin_addr), inet_ntoa(recv_addr.sin_addr));
-//             } else {
-//                 printf("%d %s (%s)\n", ttl, rev_host, inet_ntoa(recv_addr.sin_addr));
-//                 free(rev_host);
-//             }
-
-//             if (recv_addr.sin_addr.s_addr == addr_con->sin_addr.s_addr) {
-//                 break;
-//             }
-//         }
-//     }
-// }
-
-void send_traceroute(int sockfd, struct sockaddr_in *dest_addr, char *dest_ip)
-{
-    int ttl = 1;
-    int finished = 0;
-
-    while (ttl <= MAX_HOPS && !finished)
-    {
-        // Set the TTL on the socket
-        setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl));
-
-        // Send the ICMP packet and receive the response
-        int received = 0;
-        struct sockaddr_in response_addr;
-        socklen_t response_addr_len = sizeof(response_addr);
-        struct icmp_packet packet;
-        create_icmp_packet(&packet);
+        if (sendto(sockfd, &icmp_hdr, sizeof(icmp_hdr), 0, (struct sockaddr *) addr_con, sizeof(*addr_con)) < 0) {
+            printf("Error sending ICMP packet!\n");
+            return;
+        }
 
         struct timeval timeout;
-        timeout.tv_sec = TIMEOUT;
+        timeout.tv_sec = RECV_TIMEOUT;
         timeout.tv_usec = 0;
-        setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof(timeout));
+        setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
 
-        sendto(sockfd, &packet, sizeof(packet), 0, (struct sockaddr *)dest_addr, sizeof(*dest_addr));
+        addr_len = sizeof(recv_addr);
+        recv_len = recvfrom(sockfd, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *) &recv_addr, &addr_len);
 
-        if (recvfrom(sockfd, &packet, sizeof(packet), 0, (struct sockaddr *)&response_addr, &response_addr_len) > 0)
-        {
-            received = 1;
-        }
+        if (recv_len <= 0) {
+            printf("%d\t*\n", ttl);
+        } else {
+            rev_host = reverse_dns_lookup(inet_ntoa(recv_addr.sin_addr));
+            if (rev_host == NULL) {
+                printf("%d %s (%s)\n", ttl, inet_ntoa(recv_addr.sin_addr), inet_ntoa(recv_addr.sin_addr));
+            } else {
+                printf("%d %s (%s)\n", ttl, rev_host, inet_ntoa(recv_addr.sin_addr));
+                free(rev_host);
+            }
 
-        if (received)
-        {
-            char addr_str[INET_ADDRSTRLEN];
-            inet_ntop(AF_INET, &(response_addr.sin_addr), addr_str, INET_ADDRSTRLEN);
-
-            printf("%d\t%s (%s)\n", ttl, addr_str, addr_str);
-
-            if (strcmp(addr_str, dest_ip) == 0)
-            {
-                finished = 1;
+            if (recv_addr.sin_addr.s_addr == addr_con->sin_addr.s_addr) {
+                break;
             }
         }
-        else
-        {
-            printf("%d\t*\n", ttl);
-        }
-
-        ttl++;
     }
 }
 
@@ -169,7 +131,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    send_traceroute(sockfd, &addr_con, dst_ip, argv[1]);
+    traceroute(sockfd, &addr_con, dst_ip, argv[1]);
     close(sockfd);
 
     return 0;
