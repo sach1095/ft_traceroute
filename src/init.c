@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:44 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/03/30 17:42:38 by sbaranes         ###   ########.fr       */
+/*   Updated: 2023/03/31 14:11:34 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	init_args(t_args *args)
 	args->ip_brut = NULL;
 	args->hostname = NULL;
 	args->sock = 0;
-	args->ttl = 63;
+	args->ttl = 0;
 	args->tv_out.tv_sec = 1;
 	args->tv_out.tv_usec = 0;
 	args->diff = false;

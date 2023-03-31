@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:24 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/03/30 17:39:05 by sbaranes         ###   ########.fr       */
+/*   Updated: 2023/03/31 14:11:37 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include <float.h>
 
 # define PKT_SIZE 64
+# define MAX_TTL 63
 # define RESERVED 69
 # define TTL_EXCCEDED 192
 # define ECHO_REPLY 0
@@ -103,9 +104,9 @@ int				ft_strncmp(const char *s1, const char *s2, size_t n);
 char			*ft_strcpy(char *dest, char *src);
 
 /*
-** send_ping.c
+** process_traceroute.c
 */
-int				send_ping(t_args *args, struct sockaddr_in *addr_config);
+int				process_traceroute(t_args *args, struct sockaddr_in *addr_config);
 
 /*
 ** processHost.c

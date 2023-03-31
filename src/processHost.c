@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:56 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/03/30 17:50:00 by sbaranes         ###   ########.fr       */
+/*   Updated: 2023/03/31 18:07:01 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ int	process_host(t_args *args, struct sockaddr_in *addr_config)
 	(*addr_config).sin_port = htons(0);
 	(*addr_config).sin_addr.s_addr = *(long *)host_entity->h_addr;
 	args->sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+	if (args->sock < 0)
+		return print_error("Ft_Traceroute: Error creating socket");
 	return (EXIT_SUCCESS);
 }
 

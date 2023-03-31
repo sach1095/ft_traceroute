@@ -80,7 +80,6 @@ void traceroute(int sockfd, struct sockaddr_in *addr_con, char *dst_ip, char *ds
     int ttl, recv_len, addr_len;
     struct sockaddr_in recv_addr;
     struct icmphdr icmp_hdr;
-    struct iphdr ip_hdr;
     char recv_buf[1024];
     char *rev_host;
 
@@ -130,7 +129,7 @@ void traceroute(int sockfd, struct sockaddr_in *addr_con, char *dst_ip, char *ds
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
     int sockfd;
     char *dst_ip;
     struct sockaddr_in addr_con;
