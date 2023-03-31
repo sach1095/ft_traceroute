@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:59 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/03/31 18:20:37 by sbaranes         ###   ########.fr       */
+/*   Updated: 2023/03/31 18:21:30 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,27 @@
 
 t_stats	g_stats;
 
-static void	save_stats(t_stats *stats)
-{
-	float	old_time;
+// static void	save_stats(t_stats *stats)
+// {
+// 	float	old_time;
 
-	old_time = 0;
-	stats->time_recv = get_time();
-	old_time = stats->time;
-	stats->time = stats->time_recv - stats->time_start;
-	if (stats->min > stats->time)
-		stats->min = stats->time;
-	if (stats->max < stats->time)
-		stats->max = stats->time;
-	stats->avg += stats->time;
-	if (stats->seq > 1)
-	{
-		if (stats->time > old_time)
-			stats->mdev += stats->time - old_time;
-		else
-			stats->mdev += old_time - stats->time;
-	}
-}
+// 	old_time = 0;
+// 	stats->time_recv = get_time();
+// 	old_time = stats->time;
+// 	stats->time = stats->time_recv - stats->time_start;
+// 	if (stats->min > stats->time)
+// 		stats->min = stats->time;
+// 	if (stats->max < stats->time)
+// 		stats->max = stats->time;
+// 	stats->avg += stats->time;
+// 	if (stats->seq > 1)
+// 	{
+// 		if (stats->time > old_time)
+// 			stats->mdev += stats->time - old_time;
+// 		else
+// 			stats->mdev += old_time - stats->time;
+// 	}
+// }
 
 static t_packet	create_packet()
 {
