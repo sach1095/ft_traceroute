@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:59 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/03/31 18:16:09 by sbaranes         ###   ########.fr       */
+/*   Updated: 2023/03/31 18:20:37 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ void	procces_recv(t_args *args, t_packet packet, struct sockaddr_in *addr_config
 
 int	process_traceroute(t_args *args, struct sockaddr_in *addr_config)
 {
-	bool		sucess;
 	t_packet	packet;
 
 	printf("Ft_Traceroute %s (%s) 56(84) bytes of data.\n", args->ip_brut, args->ip);
@@ -92,7 +91,7 @@ int	process_traceroute(t_args *args, struct sockaddr_in *addr_config)
 	{
 		if (setsockopt(args->sock, IPPROTO_IP, IP_TTL, &args->ttl, sizeof(args->ttl)))
 			return (print_error("Set option socket fail"));
-		packet = create_packet(&g_stats);
+		packet = create_packet();
 		if (sendto(args->sock, &packet, sizeof(packet), 0,
 				(struct sockaddr*) addr_config, sizeof(*addr_config)) < 0)
 			return print_error("Ft_traceroute: Error sending packet");
