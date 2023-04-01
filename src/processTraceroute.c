@@ -36,79 +36,76 @@ t_stats	g_stats;
 // 	}
 // }
 
-static t_packet	create_packet()
+static void	set_packet_header(t_args *args)
 {
-	t_packet	packet;
-
-	ft_bzero(&packet, sizeof(packet));
-	packet.hdr.type = ICMP_ECHO;
-	packet.hdr.code = 0;
-	packet.hdr.un.echo.id = htons(getpid() & 0xFFFF);
-	packet.hdr.un.echo.sequence = htons(1);
-	packet.hdr.checksum = 0;
-	packet.hdr.checksum = calc_checksum(&packet, sizeof(packet));
-	return (packet);
+	args->pkt.hdr.type = ICMP_ECHO;
+	args->pkt.hdr.code = 0;
+	args->pkt.hdr.checksum = 0;
+	args->pkt.hdr.un.echo.id = htons(getpid() & 0xFFFF);
+	args->pkt.hdr.un.echo.sequence = htons(1);
+	args->pkt.hdr.checksum = calc_checksum((unsigned short *)&args->pkt.hdr, sizeof(args->pkt.hdr));
 }
 
-void	procces_recv(t_args *args, t_packet packet, struct sockaddr_in *addr_config)
+static char *reverse_dns_lookup(char *ip_addr)
 {
-	struct sockaddr_in	*recv_addr;
-	unsigned int		size_config_recev;
+	struct sockaddr_in	temp_addr;
+	socklen_t			len;
+	char				buf[NI_MAXHOST];
+	char				*ret_buf;
 
-	size_config_recev = sizeof(recv_addr);
-	if (recvfrom(args->sock, &packet, sizeof(packet), 0,
-				(struct sockaddr*)&recv_addr, &size_config_recev)
-			<= 0)
-	{
-		 printf("%d\t*\n", args->ttl);
-		// save_stats(&g_stats);
-		// if (sucess)
-		// {
-		// 	if (packet.hdr.type == RESERVED && packet.hdr.code
-		// 		== ECHO_REPLY)
-		// 		print_receive_success(args, &g_stats);
-		// }
-	}
+	ret_buf = NULL;
+	temp_addr.sin_family = AF_INET;
+	len = sizeof(struct sockaddr_in);
+	temp_addr.sin_addr.s_addr = inet_addr(ip_addr);
+	if (getnameinfo((struct sockaddr *)&temp_addr, len, buf, sizeof(buf), NULL, 0, NI_NAMEREQD))
+		return NULL;
+	ret_buf = (char *)malloc(NI_MAXHOST * sizeof(char));
+	ft_strcpy(ret_buf, buf);
+	return ret_buf;
+}
+
+static bool	check_recv(t_args *args, struct sockaddr_in *addr_con)
+{
+	struct sockaddr_in	recv_addr;
+	unsigned int		addr_len;
+	char				recv_buf[1024];
+	char				*rev_host;
+
+	addr_len = sizeof(recv_addr);
+	if (recvfrom(args->sockfd, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *) &recv_addr, &addr_len) <= 0)
+		printf("%d\t*\n", args->ttl);
 	else
 	{
-		chek_rev_dns(args->ip, args);
-		if (args->hostname == NULL)
-			printf("%d %s (%s)\n", args->ttl, args->ip, args->ip);
+		rev_host = reverse_dns_lookup(inet_ntoa(recv_addr.sin_addr));
+		if (rev_host == NULL)
+			printf("%d %s (%s)\n", args->ttl, inet_ntoa(recv_addr.sin_addr), inet_ntoa(recv_addr.sin_addr));
 		else
-			printf("%d %s (%s)\n", args->ttl, args->hostname, args->ip);
-		if (recv_addr->sin_addr.s_addr == addr_config->sin_addr.s_addr)
-			exit(0);
+		{
+			printf("%d %s (%s)\n", args->ttl, rev_host, inet_ntoa(recv_addr.sin_addr));
+			free(rev_host);
+		}
+		if (recv_addr.sin_addr.s_addr == addr_con->sin_addr.s_addr)
+			return true;
 	}
-
+	return false;
 }
 
-int	process_traceroute(t_args *args, struct sockaddr_in *addr_config)
+void	process_traceroute(t_args *args, struct sockaddr_in *addr_con)
 {
-	t_packet	packet;
-
-	printf("Ft_Traceroute %s (%s) 56(84) bytes of data.\n", args->ip_brut, args->ip);
 	while (args->ttl <= MAX_TTL)
 	{
-		if (setsockopt(args->sock, IPPROTO_IP, IP_TTL, &args->ttl, sizeof(args->ttl)))
-			return (print_error("Set option socket fail"));
-		packet = create_packet();
-		if (sendto(args->sock, &packet, sizeof(packet), 0,
-				(struct sockaddr*) addr_config, sizeof(*addr_config)) < 0)
-			return print_error("Ft_traceroute: Error sending packet");
-		procces_recv(args, packet, addr_config);
+		if (setsockopt(args->sockfd, IPPROTO_IP, IP_TTL, &args->ttl, sizeof(args->ttl)) != 0) {
+			printf("Error setting TTL value!\n");
+			return;
+		}
+		set_packet_header(args);
+		if (sendto(args->sockfd, &args->pkt.hdr, sizeof(args->pkt.hdr), 0, (struct sockaddr *) addr_con, sizeof(*addr_con)) < 0) {
+			printf("Error sending ICMP packet!\n");
+			return;
+		}
+		setsockopt(args->sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&args->timeout, sizeof(args->timeout));
+		if (check_recv(args, addr_con))
+			break ;
 		args->ttl++;
 	}
-
-	// init_stats_and_time(&g_stats, args);
-
-	// g_stats.time_gstart = get_time();
-	// while (1)
-	// {
-	// 	sucess = true;
-	// 	g_stats.time_start = get_time();
-	// 		sucess = false;
-	// 	else
-	// 		g_stats.pkt_transmited++;
-	// }
-	return (0);
 }

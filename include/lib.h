@@ -13,31 +13,40 @@
 #ifndef LIB_H
 # define LIB_H
 
-# include <stdlib.h>
-# include <stdio.h>
-# include <unistd.h>
-# include <netinet/in.h>
-# include <netinet/ip_icmp.h>
-# include <arpa/inet.h>
-# include <sys/select.h>
-# include <sys/time.h>
-# include <sys/types.h>
-# include <sys/socket.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include <netdb.h>
-# include <stdbool.h>
-# include <netdb.h>
-# include <signal.h>
-# include <float.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <netinet/ip_icmp.h>
+#include <time.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <time.h>
+#include <netinet/ip.h>
+#include <sys/time.h>
 
+#define MAX_TTL 30
+#define RECV_TIMEOUT 1
 # define PKT_SIZE 64
-# define MAX_TTL 63
 # define RESERVED 69
 # define TTL_EXCCEDED 192
 # define ECHO_REPLY 0
 # define PING_SLEEP_RATE 1000000
 # define ERROR_ARG "Number of arguments incorrect.\n"
+
+/*
+** Struct for the icmp packet
+*/
+typedef struct s_packet
+{
+	struct icmphdr	hdr;
+}t_packet;
 
 /*
 ** Struct for main variables
@@ -46,11 +55,11 @@ typedef struct s_args
 {
 	char				*ip;
 	char				*ip_brut;
-	char				*hostname;
-	int					sock;
+	int					sockfd;
 	bool				diff;
 	int					ttl;
-	struct timeval		tv_out;
+	struct timeval		timeout;
+	t_packet			pkt;
 }t_args;
 
 /*
@@ -81,15 +90,6 @@ typedef struct s_stats
 	bool	error;
 }t_stats;
 
-/*
-** Struct for the icmp packet
-*/
-typedef struct s_packet
-{
-	struct icmphdr	hdr;
-	char			msg[PKT_SIZE - sizeof(struct icmphdr)];
-}t_packet;
-
 /*******************************
 ** Methods in different files **
 *******************************/
@@ -97,36 +97,14 @@ typedef struct s_packet
 /*
 ** utils.c
 */
-int				length(char *str);
 double			get_time(void);
-void			ft_bzero(void *s, size_t n);
-int				ft_strncmp(const char *s1, const char *s2, size_t n);
+int				ft_strlen(char *str);
 char			*ft_strcpy(char *dest, char *src);
+unsigned short	calc_checksum(void *packet, int len);
 
 /*
 ** process_traceroute.c
 */
-int				process_traceroute(t_args *args, struct sockaddr_in *addr_config);
-
-/*
-** processHost.c
-*/
-int				process_host(t_args *args, struct sockaddr_in *addr_config);
-unsigned short	calc_checksum(void *packet, int len);
-void			chek_rev_dns(char *ip_addr, t_args *args);
-
-/*
-** printMethod.c
-*/
-int				print_error(char *strError);
-void			print_stats(t_stats stats);
-void			print_receive_success(t_args *args, t_stats *stats);
-void			print_receive_fail(t_args *args, t_stats *stats);
-
-/*
-** init.c
-*/
-void			init_stats_and_time(t_stats *stats, t_args *args);
-void			init_args(t_args *args);
+void			process_traceroute(t_args *args, struct sockaddr_in *addr_con);
 
 #endif
