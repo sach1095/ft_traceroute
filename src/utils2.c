@@ -5,6 +5,7 @@ void	init_args(t_args *args)
 	args->ttl = 1;
 	args->ip = NULL;
 	args->sockfd = 0;
+	args->final = false;
 	args->hostname = NULL;
 }
 

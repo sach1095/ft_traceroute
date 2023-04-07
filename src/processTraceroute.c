@@ -30,14 +30,18 @@ static char *reverse_dns_lookup(char *ip_addr)
 	return ret_buf;
 }
 
-static bool	check_recv(t_args *args, t_addr_in *addr_con, int loop)
+static void	check_recv(t_args *args, t_addr_in *addr_con, int loop)
 {
 	t_addr_in	recv_addr;
 	unsigned int		addr_len;
 	char				recv_buf[1024];
+	int					recv;
 
 	addr_len = sizeof(recv_addr);
-	if (recvfrom(args->sockfd, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *) &recv_addr, &addr_len) <= 0)
+	recv = recvfrom(args->sockfd, recv_buf, sizeof(recv_buf), 0, (struct sockaddr *) &recv_addr, &addr_len);
+	if (recv_addr.sin_addr.s_addr == addr_con->sin_addr.s_addr)
+		args->final = true;
+	if (recv <= 0 || args->final)
 	{
 		if (loop == 1)
 			printf("%d ", args->ttl);
@@ -50,11 +54,8 @@ static bool	check_recv(t_args *args, t_addr_in *addr_con, int loop)
 		{
 			args->hostname = reverse_dns_lookup(inet_ntoa(recv_addr.sin_addr));
 				print_recv_packet(args, recv_addr, loop);
-			if (recv_addr.sin_addr.s_addr == addr_con->sin_addr.s_addr)
-				return true;
 		}
 	}
-	return false;
 }
 
 static int	process_packet(t_args *args, t_addr_in *addr_con, int loop)
@@ -69,9 +70,8 @@ static int	process_packet(t_args *args, t_addr_in *addr_con, int loop)
 	if (sendto(args->sockfd, &args->pkt.hdr, sizeof(args->pkt.hdr), 0, (struct sockaddr *) addr_con, sizeof(*addr_con)) < 0)
 		return (print_error("Error sending ICMP packet!\n"));
 	setsockopt(args->sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
-	if (check_recv(args, addr_con, loop))
-		return (0);
-	return (1);
+	check_recv(args, addr_con, loop);
+	return (false);
 }
 
 void	process_traceroute(t_args *args, t_addr_in *addr_con)
@@ -89,8 +89,7 @@ void	process_traceroute(t_args *args, t_addr_in *addr_con)
 			args->revc_error = false;
 			loop++;
 			tstart = get_time();
-			process_send = process_packet(args, addr_con, loop);
-			if (process_send > 1)
+			if (process_packet(args, addr_con, loop))
 				return ;
 			if (args->revc_error == false)
 				printf("  %.3f ms", ((get_time() - tstart) / 1000.0));

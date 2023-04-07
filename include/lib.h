@@ -57,6 +57,7 @@ typedef struct s_args
 	char				*ip;
 	char				*hostname;
 	int					sockfd;
+	bool				final;
 	int					ttl;
 	int					loop;
 	double				t1;
