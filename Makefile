@@ -26,7 +26,7 @@ PATH_SRC	=	src
 PATH_OBJ	=	obj
 
 # Source
-SRC			=	$(addprefix $(PATH_SRC)/, main.c processTraceroute.c utils.c)
+SRC			=	$(addprefix $(PATH_SRC)/, main.c processTraceroute.c utils.c utils2.c)
 
 OBJ			=	$(addprefix $(PATH_OBJ)/, $(SRC:.c=.o))
 
@@ -57,6 +57,6 @@ fclean	:	clean
 re		:	fclean all
 
 run		:
-	@ make && ./$(NAME)
+	@ make && ./$(NAME) 8.8.8.8
 
 .PHONY: all compil clean fclean re run

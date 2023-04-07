@@ -27,7 +27,7 @@ double	get_time(void)
 	struct timeval	t;
 
 	gettimeofday(&t, NULL);
-	return ((t.tv_sec * 1000) + (t.tv_usec / 1000));
+	return ((t.tv_sec * 1000000.0) + t.tv_usec);
 }
 
 char	*ft_strcpy(char *dest, char *src)
@@ -63,4 +63,18 @@ unsigned short	calc_checksum(void *packet, int len)
 	sum += (sum >> 16);
 	result = ~sum;
 	return (result);
+}
+
+void	print_recv_packet(t_args *args, t_addr_in	recv_addr, int loop)
+{
+	if (loop != 1)
+		return ;
+	if (args->hostname == NULL)
+		printf("%d %s (%s)", args->ttl, inet_ntoa(recv_addr.sin_addr), inet_ntoa(recv_addr.sin_addr));
+	else
+	{
+		printf("%d %s (%s)", args->ttl, args->hostname, inet_ntoa(recv_addr.sin_addr));
+		free(args->hostname);
+		args->hostname = NULL;
+	}
 }
