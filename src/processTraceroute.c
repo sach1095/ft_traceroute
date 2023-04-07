@@ -56,6 +56,8 @@ static void	check_recv(t_args *args, t_addr_in *addr_con, int loop)
 		{
 			args->hostname = reverse_dns_lookup(inet_ntoa(recv_addr.sin_addr));
 			print_recv_packet(args, recv_addr, loop);
+			if (args->final && args->ttl == 1)
+				exit(0);
 		}
 	}
 }
@@ -63,7 +65,6 @@ static void	check_recv(t_args *args, t_addr_in *addr_con, int loop)
 static int	process_packet(t_args *args, t_addr_in *addr_con, int loop)
 {
 	struct timeval	timeout;
-	int				send;
 
 	timeout.tv_sec = RECV_TIMEOUT;
 	timeout.tv_usec = 0;
@@ -71,15 +72,9 @@ static int	process_packet(t_args *args, t_addr_in *addr_con, int loop)
 			&args->ttl, sizeof(args->ttl)) != 0)
 		return (print_error("Error setting TTL value!\n"));
 	set_packet_header(args);
-	send = sendto(args->sockfd, &args->pkt.hdr, sizeof(args->pkt.hdr), 0,
-			(struct sockaddr *) addr_con, sizeof(*addr_con));
-	if (send < 0)
-	{
-		printf("error sending packet = %d\n", send);
-		if (send == 5)
-			return (print_error("connect: Permission denied\n"));
-		return (print_error("Error sending ICMP packet!\n"));
-	}
+	if (sendto(args->sockfd, &args->pkt.hdr, sizeof(args->pkt.hdr), 0,
+			(struct sockaddr *) addr_con, sizeof(*addr_con)) < 0)
+		return (printf("connect: %s\n", strerror(errno)));
 	setsockopt(args->sockfd, SOL_SOCKET, SO_RCVTIMEO,
 		(const char *)&timeout, sizeof(timeout));
 	check_recv(args, addr_con, loop);

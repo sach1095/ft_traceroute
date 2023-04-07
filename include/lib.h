@@ -30,6 +30,7 @@
 # include <time.h>
 # include <netinet/ip.h>
 # include <sys/time.h>
+# include <errno.h>
 
 # define MAX_TTL 30
 # define RECV_TIMEOUT 1

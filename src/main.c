@@ -43,19 +43,16 @@ int	main(int ac, char **av)
 	t_addr_in	addr_con;
 
 	if (ac != 2)
-	{
-		print_error("%s: Bad Args: usage: ./%s <address>\n", av[0], av[]);
-		return (1);
-	}
+		return printf("%s: Bad Args: usage: ./%s <address>\n", av[0], av[0]);
 	init_args(&args);
 	args.ip = dns_lookup(av[1], &addr_con);
 	if (args.ip == NULL)
-		return (print_error("Ft_traceroute : could not resolve hostname\n"));
+		return (printf("%s: could not resolve hostname\n", av[0]));
 	args.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
 	if (args.sockfd < 0)
 	{
 		free(args.ip);
-		return (print_error("Ft_traceroute: Error creating socket!\n"));
+		return (printf("%s: Error creating socket!\n", av[0]));
 	}
 	printf("Traceroute to %s (%s), %d hops max, 60 byte packets\n",
 		av[1], args.ip, MAX_TTL);
