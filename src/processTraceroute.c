@@ -42,12 +42,15 @@ bool	same_recv(t_addr_in *addr_prev, t_addr_in *recv_addr)
 
 void	print_time_recv(t_args *args)
 {
-	if (args->t1 != -1)
-		printf(" %.3f ms ", args->t1);
-	if (args->t2 != -1)
-		printf(" %.3f ms ", args->t2);
-	if (args->t3 != -1)
-		printf(" %.3f ms ", args->t3);
+	if (args->revc_error == false)
+	{
+		if (args->t1 != -1)
+			printf(" %.3f ms ", args->t1);
+		if (args->t2 != -1)
+			printf(" %.3f ms ", args->t2);
+		if (args->t3 != -1)
+			printf(" %.3f ms ", args->t3);
+	}
 	args->t1 = -1;
 	args->t2 = -1;
 	args->t3 = -1;
@@ -100,13 +103,13 @@ static int	process_packet(t_args *args, t_addr_in *addr_con, t_addr_in	*addr_pre
 
 	timeout.tv_usec = 0;
 	timeout.tv_sec = RECV_TIMEOUT;
+	set_packet_header(args);
 	if (setsockopt(args->sockfd, IPPROTO_IP, IP_TTL, &args->ttl, sizeof(args->ttl)) != 0)
 		return (print_error("Error setting TTL value!\n"));
-	set_packet_header(args);
 	setsockopt(args->sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
+	tstart = get_time();
 	if (sendto(args->sockfd, &args->pkt.hdr, sizeof(args->pkt.hdr), 0, (struct sockaddr *) addr_con, sizeof(*addr_con)) < 0)
 		return (print_error("Error sending ICMP packet!\n"));
-	tstart = get_time();
 	check_recv(args, addr_con, addr_prev);
 	set_time(args, loop, ((get_time() - tstart) / 1000.0));
 	return (0);
@@ -131,8 +134,8 @@ void	process_traceroute(t_args *args, t_addr_in *addr_con)
 			loop++;
 			if (process_packet(args, addr_con, &addr_prev, loop))
 				return ;
+			print_time_recv(args);
 		}
-		print_time_recv(args);
 		printf("\n");
 		if (args->recv_host == 2)
 			break ;
