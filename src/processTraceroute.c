@@ -31,15 +31,19 @@ static char	*reverse_dns_lookup(char *ip_addr)
 	return (ret_buf);
 }
 
-bool	check_if_print(t_addr_in *addr_prev, t_addr_in recv_addr)
+bool	check_if_print(t_args *args, t_addr_in *addr_prev, t_addr_in recv_addr)
 {
-	if (inet_ntoa(recv_addr.sin_addr.s_addr)
-		!= inet_ntoa(addr_prev->sin_addr.s_addr))
+	if (args->recv_host == 1 || args->recv_host == 2)
 	{
-		args->recv_host = 0;
-		return (true);
+		if (inet_ntoa(recv_addr.sin_addr)
+			!= inet_ntoa(addr_prev->sin_addr))
+		{
+			args->recv_host = 0;
+			return (true);
+		}
+		return (false);
 	}
-	return (false);
+	return (true);
 }
 
 void	print_time_recv(t_args *args)
@@ -81,7 +85,7 @@ static bool	check_recv(t_args *args, t_addr_in *addr_con, t_addr_in	*addr_prev)
 		printf(" *");
 		args->revc_error = true;
 	}
-	else if (check_if_print(addr_prev, recv_addr))
+	else if (check_if_print(args, addr_prev, recv_addr))
 	{
 		addr_prev->sin_addr.s_addr = recv_addr.sin_addr.s_addr;
 		args->hostname = reverse_dns_lookup(inet_ntoa(recv_addr.sin_addr));
