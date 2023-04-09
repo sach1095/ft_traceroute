@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:24 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/04/09 17:58:30 by sbaranes         ###   ########.fr       */
+/*   Updated: 2023/04/09 18:25:12 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,9 @@ void			print_recv_packet(t_args *args, t_addr_in recv_addr);
 void			init_args(t_args *args);
 int				print_error(char *strError);
 void			set_packet_header(t_args *args);
+void			print_time_recv(t_args *args);
+bool			check_if_print(t_args *args, t_addr_in *addr_prev,
+					t_addr_in recv_addr);
 
 /*
 ** process_traceroute.c

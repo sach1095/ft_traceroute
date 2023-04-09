@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:59 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/04/09 18:17:01 by sbaranes         ###   ########.fr       */
+/*   Updated: 2023/04/09 18:24:31 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,37 +29,6 @@ static char	*reverse_dns_lookup(char *ip_addr)
 	ret_buf = (char *)malloc(NI_MAXHOST * sizeof(char));
 	ft_strcpy(ret_buf, buf);
 	return (ret_buf);
-}
-
-bool	check_if_print(t_args *args, t_addr_in *addr_prev, t_addr_in recv_addr)
-{
-	if (args->recv_host == 1 || args->recv_host == 2)
-	{
-		if (inet_ntoa(recv_addr.sin_addr)
-			!= inet_ntoa(addr_prev->sin_addr))
-		{
-			args->recv_host = 0;
-			return (true);
-		}
-		return (false);
-	}
-	return (true);
-}
-
-void	print_time_recv(t_args *args)
-{
-	if (args->revc_error == false)
-	{
-		if (args->t1 != -1)
-			printf(" %.3f ms ", args->t1);
-		if (args->t2 != -1)
-			printf(" %.3f ms ", args->t2);
-		if (args->t3 != -1)
-			printf(" %.3f ms ", args->t3);
-	}
-	args->t1 = -1;
-	args->t2 = -1;
-	args->t3 = -1;
 }
 
 void	set_time(t_args *args, int loop, double time)
