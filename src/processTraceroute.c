@@ -65,6 +65,7 @@ static void	check_recv(t_args *args, t_addr_in *addr_con, int loop)
 static int	process_packet(t_args *args, t_addr_in *addr_con, int loop)
 {
 	struct timeval	timeout;
+	double	tstart;
 
 	timeout.tv_sec = RECV_TIMEOUT;
 	timeout.tv_usec = 0;
@@ -75,9 +76,12 @@ static int	process_packet(t_args *args, t_addr_in *addr_con, int loop)
 	if (sendto(args->sockfd, &args->pkt.hdr, sizeof(args->pkt.hdr), 0,
 			(struct sockaddr *) addr_con, sizeof(*addr_con)) < 0)
 		return (printf("connect: %s\n", strerror(errno)));
+	tstart = get_time();
 	setsockopt(args->sockfd, SOL_SOCKET, SO_RCVTIMEO,
 		(const char *)&timeout, sizeof(timeout));
 	check_recv(args, addr_con, loop);
+	if (args->revc_error == false)
+		printf("  %.3f ms", ((get_time() - tstart) / 1000.0));
 	return (false);
 }
 
@@ -85,7 +89,6 @@ void	process_traceroute(t_args *args, t_addr_in *addr_con)
 {
 	int		loop;
 	int		process_send;
-	double	tstart;
 
 	process_send = true;
 	while (args->ttl <= MAX_TTL && process_send)
@@ -95,11 +98,8 @@ void	process_traceroute(t_args *args, t_addr_in *addr_con)
 		{
 			args->revc_error = false;
 			loop++;
-			tstart = get_time();
 			if (process_packet(args, addr_con, loop))
 				return ;
-			if (args->revc_error == false)
-				printf("  %.3f ms", ((get_time() - tstart) / 1000.0));
 		}
 		printf("\n");
 		args->ttl++;
