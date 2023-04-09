@@ -54,16 +54,17 @@ typedef struct s_packet
 */
 typedef struct s_args
 {
-	char				*ip;
-	char				*hostname;
-	int					sockfd;
-	int					ttl;
-	int					loop;
-	double				t1;
-	double				t2;
-	double				t3;
-	t_packet			pkt;
-	bool	revc_error;
+	char		*ip;
+	char		*hostname;
+	int			sockfd;
+	int			ttl;
+	int			loop;
+	double		t1;
+	double		t2;
+	double		t3;
+	t_packet	pkt;
+	bool		revc_error;
+	int			recv_host;
 }t_args;
 
 /*******************************
@@ -77,7 +78,7 @@ double			get_time(void);
 int				ft_strlen(char *str);
 char			*ft_strcpy(char *dest, char *src);
 unsigned short	calc_checksum(void *packet, int len);
-void			print_recv_packet(t_args *args, t_addr_in	recv_addr, int loop);
+void			print_recv_packet(t_args *args, t_addr_in recv_addr);
 
 
 /*

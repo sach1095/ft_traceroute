@@ -65,15 +65,14 @@ unsigned short	calc_checksum(void *packet, int len)
 	return (result);
 }
 
-void	print_recv_packet(t_args *args, t_addr_in	recv_addr, int loop)
+void	print_recv_packet(t_args *args, t_addr_in	recv_addr)
 {
-	if (loop != 1)
-		return ;
+
 	if (args->hostname == NULL)
-		printf("%d %s (%s)", args->ttl, inet_ntoa(recv_addr.sin_addr), inet_ntoa(recv_addr.sin_addr));
+		printf("%s (%s)", inet_ntoa(recv_addr.sin_addr), inet_ntoa(recv_addr.sin_addr));
 	else
 	{
-		printf("%d %s (%s)", args->ttl, args->hostname, inet_ntoa(recv_addr.sin_addr));
+		printf("%s (%s)", args->hostname, inet_ntoa(recv_addr.sin_addr));
 		free(args->hostname);
 		args->hostname = NULL;
 	}
