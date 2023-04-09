@@ -6,7 +6,7 @@
 /*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:46:02 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/01/16 15:43:14 by sbaranes         ###   ########lyon.fr   */
+/*   Updated: 2023/04/09 18:01:07 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,9 @@ unsigned short	calc_checksum(void *packet, int len)
 
 void	print_recv_packet(t_args *args, t_addr_in	recv_addr)
 {
-
 	if (args->hostname == NULL)
-		printf("%s (%s)", inet_ntoa(recv_addr.sin_addr), inet_ntoa(recv_addr.sin_addr));
+		printf("%s (%s)", inet_ntoa(recv_addr.sin_addr),
+			inet_ntoa(recv_addr.sin_addr));
 	else
 	{
 		printf("%s (%s)", args->hostname, inet_ntoa(recv_addr.sin_addr));
