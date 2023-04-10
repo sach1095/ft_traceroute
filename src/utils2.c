@@ -16,12 +16,16 @@ void	init_args(t_args *args)
 {
 	args->ttl = 1;
 	args->ip = NULL;
-	args->sockfd = 0;
-	args->hostname = NULL;
+
 }
 
 void	set_packet_header(t_args *args)
 {
+	int	i;
+
+	i = 0;
+	if (args->icmp)
+	{
 	args->pkt.hdr.type = ICMP_ECHO;
 	args->pkt.hdr.code = 0;
 	args->pkt.hdr.checksum = 0;
@@ -29,6 +33,12 @@ void	set_packet_header(t_args *args)
 	args->pkt.hdr.un.echo.sequence = htons(1);
 	args->pkt.hdr.checksum = calc_checksum((unsigned short *)&args->pkt.hdr,
 			sizeof(args->pkt.hdr));
+	}
+	else
+	{
+		while (i < USHRT_MAX)
+			args->pkt.buffer[i++] = 0;
+	}
 }
 
 int	print_error(char *strError)

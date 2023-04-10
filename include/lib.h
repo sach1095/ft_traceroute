@@ -30,17 +30,21 @@
 # include <time.h>
 # include <netinet/ip.h>
 # include <sys/time.h>
+# include <errno.h>
+# include <limits.h>
 
-# define MAX_TTL 30
 # define RECV_TIMEOUT 1
-# define PKT_SIZE 64
-# define RESERVED 69
-# define TTL_EXCCEDED 192
-# define ECHO_REPLY 0
-# define PING_SLEEP_RATE 1000000
 # define ERROR_ARG "Number of arguments incorrect.\n"
 
 typedef struct sockaddr	t_addr_in;
+
+typedef union
+{
+	struct sockaddr sa;
+	struct sockaddr_in sin;
+	struct sockaddr_in6 sin6;
+	struct sockaddr_storage ss;
+} t_addr;
 
 /*
 ** Struct for the icmp packet
@@ -48,26 +52,25 @@ typedef struct sockaddr	t_addr_in;
 typedef struct s_packet
 {
 	struct icmphdr	hdr;
+	char			buffer[USHRT_MAX];
 }t_packet;
+
 
 /*
 ** Struct for main variables
 */
 typedef struct s_args
 {
-	char		*ip;
-	char		*hostname;
-	int			sockfd;
-	int			recv_sock;
-	int			send_sock;
-	int			ttl;
-	int			loop;
-	double		t1;
-	double		t2;
-	double		t3;
-	t_packet	pkt;
-	bool		revc_error;
-	int			recv_host;
+	char			*ip;
+	int				recv_sock;
+	int				send_sock;
+	int				ttl;
+	bool			icmp;
+	int				max_ttl;
+	int				datalen;
+	t_packet		pkt;
+	t_addr			server_addr;
+	struct timeval	time;
 }t_args;
 
 /*******************************
@@ -96,6 +99,6 @@ bool			check_if_print(t_args *args, t_addr_in *addr_prev,
 /*
 ** process_traceroute.c
 */
-void			process_traceroute(t_args *args, t_addr_in *addr_con);
+void			process_traceroute(t_args *args);
 
 #endif
