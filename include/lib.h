@@ -40,7 +40,7 @@
 # define PING_SLEEP_RATE 1000000
 # define ERROR_ARG "Number of arguments incorrect.\n"
 
-typedef struct sockaddr_in	t_addr_in;
+typedef struct sockaddr	t_addr_in;
 
 /*
 ** Struct for the icmp packet
@@ -58,6 +58,8 @@ typedef struct s_args
 	char		*ip;
 	char		*hostname;
 	int			sockfd;
+	int			recv_sock;
+	int			send_sock;
 	int			ttl;
 	int			loop;
 	double		t1;

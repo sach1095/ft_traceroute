@@ -20,7 +20,7 @@ static char	*reverse_dns_lookup(char *ip_addr)
 	char		*ret_buf;
 
 	ret_buf = NULL;
-	temp_addr.sin_family = AF_INET;
+	temp_addr.sa_family = AF_INET;
 	len = sizeof(t_addr_in);
 	temp_addr.sin_addr.s_addr = inet_addr(ip_addr);
 	if (getnameinfo((struct sockaddr *)&temp_addr, len, buf,
