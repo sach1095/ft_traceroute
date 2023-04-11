@@ -26,7 +26,7 @@ PATH_SRC	=	src
 PATH_OBJ	=	obj
 
 # Source
-SRC			=	$(addprefix $(PATH_SRC)/, main.c processTraceroute.c utils.c utils2.c)
+SRC			=	$(addprefix $(PATH_SRC)/, main.c processTraceroute.c utils.c utils2.c utils3.c)
 
 OBJ			=	$(addprefix $(PATH_OBJ)/, $(SRC:.c=.o))
 

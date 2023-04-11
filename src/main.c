@@ -3,22 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:49 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/04/09 18:00:28 by sbaranes         ###   ########.fr       */
+/*   Updated: 2023/04/11 18:17:39 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lib.h"
-
-static void	close_and_free(t_args *args)
-{
-	free(args->ip);
-	close(args->sockfd);
-	args->ip = NULL;
-	args->sockfd = 0;
-}
 
 static char	*dns_lookup(char *addr_host, t_addr_in *addr_con)
 {
@@ -37,15 +29,32 @@ static char	*dns_lookup(char *addr_host, t_addr_in *addr_con)
 	return (ip);
 }
 
+static bool	pars_args(char **av, int ac, t_args *args)
+{
+	int	i;
+
+	i = 1;
+	init_args(args);
+	if (ac == 3)
+		if (procces_ac_three(av, args, &i))
+			return (EXIT_FAILURE);
+	args->ip = av[i];
+	if (args->flags[H] == true)
+		print_help();
+	return (EXIT_SUCCESS);
+}
+
 int	main(int ac, char **av)
 {
 	t_args		args;
 	t_addr_in	addr_con;
 
-	if (ac != 2)
-		return (printf("%s: Bad Args: usage: ./%s <address>\n", av[0], av[0]));
+	if (!(ac >= 2 && ac <= 3))
+		return (printf("%s: Bad Args: usage: ./%s <option> <address>\n", av[0], av[0]));
 	init_args(&args);
-	args.ip = dns_lookup(av[1], &addr_con);
+	if (pars_args(av, ac, &args))
+		return (EXIT_FAILURE);
+	args.ip = dns_lookup(args.ip, &addr_con);
 	if (args.ip == NULL)
 		return (printf("Ft_traceroute : could not resolve hostname\n"));
 	args.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
