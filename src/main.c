@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:49 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/04/11 18:17:39 by root             ###   ########.fr       */
+/*   Updated: 2023/04/11 18:21:04 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ int	main(int ac, char **av)
 	t_addr_in	addr_con;
 
 	if (!(ac >= 2 && ac <= 3))
-		return (printf("%s: Bad Args: usage: ./%s <option> <address>\n", av[0], av[0]));
+		return (printf("%s: Bad Args: usage: ./%s <option> <address>\n",
+				av[0], av[0]));
 	init_args(&args);
 	if (pars_args(av, ac, &args))
 		return (EXIT_FAILURE);

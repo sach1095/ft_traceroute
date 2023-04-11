@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lib.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: sbaranes <sbaranes@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/16 14:45:24 by sbaranes          #+#    #+#             */
-/*   Updated: 2023/04/11 18:18:22 by root             ###   ########.fr       */
+/*   Updated: 2023/04/11 18:21:16 by sbaranes         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,9 +98,9 @@ bool			check_if_print(t_args *args, t_addr_in *addr_prev,
 /*
 ** utils2.c
 */
-int	procces_ac_three(char **av, t_args *args, int *old_i);
-void	close_and_free(t_args *args);
-void	print_help(void);
+int				procces_ac_three(char **av, t_args *args, int *old_i);
+void			close_and_free(t_args *args);
+void			print_help(void);
 
 /*
 ** process_traceroute.c
